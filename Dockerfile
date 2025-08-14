@@ -27,7 +27,7 @@ ENV PHP_PACKAGES "php-gd \
                   php-pecl-wddx php-pecl-zip php-pecl-xdebug \
                   php-soap php-xml php-xmlrpc php-bcmath"
 
-RUN yum install -y $PHP_PACKAGES
+# RUN yum install -y $PHP_PACKAGES
 
 ENV NVM_PATH "creationix/nvm/v0.33.4/install.sh"
 ENV NVM_DIR  "/root/.nvm"
@@ -67,4 +67,4 @@ RUN sassc/bin/sassc  --version \
 COPY ./infra/etc /etc
 
 # 'Install MongoDB client'
-RUN yum install -y mongodb-org
+#RUN yum install -y mongodb-org
