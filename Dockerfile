@@ -30,7 +30,7 @@ ENV PHP_PACKAGES "php-gd \
 RUN yum install -y $PHP_PACKAGES
 
 ENV NVM_PATH "creationix/nvm/v0.33.4/install.sh"
-ENV NVM_DIR  "/home/appuser/.nvm"
+ENV NVM_DIR  "/root/.nvm"
 ENV NODE_VERSION_NG 10.15.1
 ENV NODE_VERSION_DASHBOARD 10.15.1
 ENV NODE_VERSION_NGAS 6.9.5
@@ -39,9 +39,6 @@ ENV NPM_VERSION_DASHBOARD 6.7.0
 ENV NPM_VERSION_NGAS 6.7.0
 
 WORKDIR /opt/scripts
-# Create non-root user
-RUN useradd -m -s /bin/bash appuser && \
-    chown -R appuser:appuser /opt/scripts
 
 # Install NPM, Grunt and Bower
 RUN wget -qO- https://raw.githubusercontent.com/${NVM_PATH} | bash && \
@@ -66,30 +63,8 @@ RUN SASS_LIBSASS_PATH=`pwd`/libsass make -C sassc -j4
 RUN sassc/bin/sassc  --version \
     && cp sassc/bin/sassc /usr/local/bin/sassc
 
-# Install drush for legacy and ng
-RUN wget http://ftp.drupal.org/files/projects/drush-7.x-5.9.tar.gz && \
-    mkdir /opt/drush && tar -zxf drush-7.x-5.9.tar.gz -C /opt/drush && \
-    ln -sf /opt/drush/drush/drush /usr/bin/drush7 && \
-    rm drush-7.x-5.9.tar.gz && \
-    composer global require drush/drush:8.1.13 && \
-    ln -s ~/.composer/vendor/drush/drush/drush /usr/bin/drush8
-
-# For BitBucket clone
-RUN mkdir /root/.ssh
-RUN chmod 700 /root/.ssh
-RUN ssh-keyscan -H bitbucket.org > /root/.ssh/known_hosts
 
 COPY ./infra/etc /etc
 
 # 'Install MongoDB client'
 RUN yum install -y mongodb-org
-
-# Set working directory for appuser
-WORKDIR /home/appuser
-
-# Grant passwordless sudo/root privileges to appuser
-RUN yum install -y sudo && \
-    echo "appuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-# Switch to non-root user
-USER appuser
