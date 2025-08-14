@@ -35,4 +35,6 @@ RUN SASS_LIBSASS_PATH=`pwd`/libsass make -C sassc -j4
 RUN sassc/bin/sassc  --version \
     && cp sassc/bin/sassc /usr/local/bin/sassc
 
-RUN yum groupremove -y 'Development Tools'
+RUN yum groupremove -y 'Development Tools' && \
+    yum clean all && \
+    rm -rf /var/cache/yum
